@@ -2,6 +2,7 @@ import { Schema, model, Document } from 'mongoose';
 import { generateId } from '../../shared/id';
 
 export interface IUser extends Document {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -42,6 +43,8 @@ const userSchema = new Schema<IUser>(
   {
     timestamps: true,
     strictQuery: 'throw',
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
