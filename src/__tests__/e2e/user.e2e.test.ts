@@ -1,13 +1,26 @@
 import request from 'supertest';
-import { app } from '../../app';
-import { UserRepository } from '../../repositories/user-repository';
-import { IUserRepository } from '../../interfaces/user-repository.interface';
+import { type Express, Router } from 'express';
+import { createApp } from '../../app';
+import {
+  createUserRouter,
+  IUserRepository,
+  UserRepository,
+  UserController,
+  UserService,
+} from '../../features/user';
 
 describe('User Endpoints', () => {
   let userRepository: IUserRepository;
+  let app: Express;
 
-  beforeEach(() => {
+  beforeAll(async () => {
     userRepository = new UserRepository();
+    const userService = new UserService(userRepository);
+    const userController = new UserController(userService);
+    const baseRouter = Router();
+    const router = createUserRouter(userController);
+    baseRouter.use('/api/users', router);
+    app = createApp(baseRouter);
   });
 
   describe('POST /api/users', () => {

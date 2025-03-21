@@ -1,6 +1,7 @@
 {
   "name": "clean-node",
   "version": "1.0.0",
+  "license": "ISC",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
@@ -13,7 +14,6 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
-  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

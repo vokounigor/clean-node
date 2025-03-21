@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { app } from './app';
+import { createApp } from './app';
+import { router } from './router';
 import { env } from './env';
 
 process.on('uncaughtException', (error) => {
@@ -11,6 +12,7 @@ process.on('uncaughtException', (error) => {
   try {
     await mongoose.connect(env.MONGODB_URI);
     console.log('Connected to MongoDB');
+    const app = createApp(router);
     app.listen(env.PORT, () => {
       console.log(`Server is running on port ${env.PORT}`);
     });

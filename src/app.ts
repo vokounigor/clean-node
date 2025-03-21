@@ -1,14 +1,14 @@
-import express from 'express';
+import express, { Router } from 'express';
 import cors from 'cors';
-import userRoutes from './routes/user-routes';
 
-const app = express();
+export function createApp(router: Router) {
+  const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+  // Middleware
+  app.use(cors());
+  app.use(express.json());
 
-// Routes
-app.use('/api/users', userRoutes);
+  app.use(router);
 
-export { app };
+  return app;
+}

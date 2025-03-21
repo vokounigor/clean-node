@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import { generateId } from './helpers/id';
+import { generateId } from '../../shared/id';
 
 export interface IUser extends Document {
   firstName: string;

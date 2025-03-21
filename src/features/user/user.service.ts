@@ -1,6 +1,6 @@
-import { NotFoundError } from '../errors/not-found';
-import type { IUserRepository } from '../interfaces/user-repository.interface';
-import { IUser } from '../models/user-model';
+import { NotFoundError } from '../../errors/not-found';
+import type { IUserRepository } from './user.types';
+import type { IUser } from './user.model';
 
 export class UserService {
   private readonly userRepository: IUserRepository;

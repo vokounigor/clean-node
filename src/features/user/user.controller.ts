@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { UserService } from '../services/user-service';
-import { NotFoundError } from '../errors/not-found';
+import type { Request, Response } from 'express';
+import type { UserService } from './user.service';
+import { NotFoundError } from '../../errors/not-found';
 
 export class UserController {
   private readonly userService: UserService;
