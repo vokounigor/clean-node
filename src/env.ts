@@ -3,12 +3,20 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 type ENV = {
+  NODE_ENV: 'development' | 'production';
   PORT: number;
   MONGODB_URI: string;
   AUTH_SALT: string;
 };
 
+const isAllowedEnv = (env?: string): env is ENV['NODE_ENV'] => {
+  return env === 'development' || env === 'production';
+};
+
 const env = {
+  NODE_ENV: isAllowedEnv(process.env.NODE_ENV)
+    ? process.env.NODE_ENV
+    : 'development',
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   MONGODB_URI: process.env.MONGODB_URI || '',
   AUTH_SALT: process.env.AUTH_SALT || '',
