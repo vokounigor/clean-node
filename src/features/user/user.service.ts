@@ -1,7 +1,8 @@
 import { NotFoundError } from '../../errors/not-found';
 import { DuplicateKeyError } from '../../errors/duplicate-key-error';
-import type { IUserRepository } from './user.types';
+import type { IUserRepository, UserData } from './user.types';
 import type { IUserEntity } from '../../entities/user.entity';
+import { hashPassword } from '../../shared/hashing';
 
 export class UserService {
   private readonly userRepository: IUserRepository;
@@ -10,11 +11,13 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  async createUser(userData: Omit<IUserEntity, 'id'>): Promise<IUserEntity> {
+  async createUser(userData: UserData): Promise<IUserEntity> {
     const existingUser = await this.userRepository.findByEmail(userData.email);
     if (existingUser) {
       throw new DuplicateKeyError('Email already exists');
     }
+
+    userData.password = hashPassword(userData.password);
     return this.userRepository.create(userData);
   }
 
@@ -32,8 +35,12 @@ export class UserService {
 
   async updateUser(
     id: string,
-    userData: Omit<IUserEntity, 'id'>
+    userData: Partial<UserData>
   ): Promise<IUserEntity> {
+    if (userData.password) {
+      userData.password = hashPassword(userData.password);
+    }
+
     const user = await this.userRepository.update(id, userData);
     if (!user) {
       throw new NotFoundError('User not found');

@@ -1,18 +1,14 @@
 import { User, type IUser } from './user.model';
-import type { IUserRepository } from './user.types';
+import type { IUserRepository, UserData } from './user.types';
 import { UserEntity, type IUserEntity } from '../../entities/user.entity';
 
 export class UserRepository implements IUserRepository {
-  async create(
-    userData: Omit<Partial<IUserEntity>, 'id'>
-  ): Promise<IUserEntity> {
+  async create(userData: UserData): Promise<IUserEntity> {
     const insertedUser = await User.insertOne(userData);
     return UserEntity.create(insertedUser);
   }
 
-  async createMany(
-    userData: Omit<Partial<IUserEntity>, 'id'>[]
-  ): Promise<IUserEntity[]> {
+  async createMany(userData: UserData[]): Promise<IUserEntity[]> {
     const insertedUsers = await User.insertMany(userData);
     return insertedUsers.map((user) => {
       const userObject = (user as IUser).toObject();
@@ -43,7 +39,7 @@ export class UserRepository implements IUserRepository {
 
   async update(
     id: string,
-    userData: Omit<Partial<IUserEntity>, 'id'>
+    userData: Partial<UserData>
   ): Promise<IUserEntity | null> {
     const updatedUser = await User.findByIdAndUpdate(
       id,
