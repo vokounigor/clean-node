@@ -1,6 +1,11 @@
 import { User, type IUser } from './user.model';
 import type { IUserRepository, UserData } from './user.types';
-import { UserEntity, type IUserEntity } from '../../entities/user.entity';
+import {
+  UserEntity,
+  UserCredentialsEntity,
+  type IUserEntity,
+  type IUserCredentialsEntity,
+} from '../../entities';
 
 export class UserRepository implements IUserRepository {
   async create(userData: UserData): Promise<IUserEntity> {
@@ -10,10 +15,7 @@ export class UserRepository implements IUserRepository {
 
   async createMany(userData: UserData[]): Promise<IUserEntity[]> {
     const insertedUsers = await User.insertMany(userData);
-    return insertedUsers.map((user) => {
-      const userObject = (user as IUser).toObject();
-      return UserEntity.create(userObject);
-    });
+    return insertedUsers.map((user) => UserEntity.create(user.toObject()));
   }
 
   async findById(id: string): Promise<IUserEntity | null> {
@@ -30,6 +32,16 @@ export class UserRepository implements IUserRepository {
       return null;
     }
     return UserEntity.create(user);
+  }
+
+  async findCredentialsByEmail(
+    email: string
+  ): Promise<IUserCredentialsEntity | null> {
+    const user = await User.findOne({ email }).select('+password').exec();
+    if (!user) {
+      return null;
+    }
+    return UserCredentialsEntity.create(user as IUser & { password: string });
   }
 
   async findAll(): Promise<IUserEntity[]> {

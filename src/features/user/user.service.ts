@@ -1,7 +1,7 @@
 import { NotFoundError } from '../../errors/not-found';
 import { DuplicateKeyError } from '../../errors/duplicate-key-error';
 import type { IUserRepository, UserData } from './user.types';
-import type { IUserEntity } from '../../entities/user.entity';
+import type { IUserCredentialsEntity, IUserEntity } from '../../entities';
 import { hashPassword } from '../../shared/hashing';
 
 export class UserService {
@@ -23,6 +23,16 @@ export class UserService {
 
   async getUserById(id: string): Promise<IUserEntity> {
     const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    return user;
+  }
+
+  async getUserCredentialsByEmail(
+    email: string
+  ): Promise<IUserCredentialsEntity> {
+    const user = await this.userRepository.findCredentialsByEmail(email);
     if (!user) {
       throw new NotFoundError('User not found');
     }
