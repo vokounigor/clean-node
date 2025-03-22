@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import cors from 'cors';
+import { errorHandler } from './errors/error-handler';
 
 export function createApp(router: Router) {
   const app = express();
@@ -8,6 +9,7 @@ export function createApp(router: Router) {
   app.use(express.json());
 
   app.use(router);
+  app.use(errorHandler);
 
   return app;
 }

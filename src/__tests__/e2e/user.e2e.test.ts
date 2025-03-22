@@ -61,7 +61,7 @@ describe('User Endpoints', () => {
       // Try to create second user with same email
       const response = await request(app).post('/api/users').send(userData);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(409);
     });
   });
 

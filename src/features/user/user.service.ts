@@ -1,4 +1,5 @@
 import { NotFoundError } from '../../errors/not-found';
+import { DuplicateKeyError } from '../../errors/duplicate-key-error';
 import type { IUserRepository } from './user.types';
 import type { IUserEntity } from '../../entities/user.entity';
 
@@ -9,7 +10,11 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-  async createUser(userData: IUserEntity): Promise<IUserEntity> {
+  async createUser(userData: Omit<IUserEntity, 'id'>): Promise<IUserEntity> {
+    const existingUser = await this.userRepository.findByEmail(userData.email);
+    if (existingUser) {
+      throw new DuplicateKeyError('Email already exists');
+    }
     return this.userRepository.create(userData);
   }
 
@@ -25,7 +30,10 @@ export class UserService {
     return this.userRepository.findAll();
   }
 
-  async updateUser(id: string, userData: IUserEntity): Promise<IUserEntity> {
+  async updateUser(
+    id: string,
+    userData: Omit<IUserEntity, 'id'>
+  ): Promise<IUserEntity> {
     const user = await this.userRepository.update(id, userData);
     if (!user) {
       throw new NotFoundError('User not found');

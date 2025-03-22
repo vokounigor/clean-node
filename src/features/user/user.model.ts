@@ -43,6 +43,7 @@ const userSchema = new Schema<IUser>(
   {
     timestamps: true,
     strictQuery: 'throw',
+    strict: 'throw',
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
