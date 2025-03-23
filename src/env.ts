@@ -7,6 +7,8 @@ type ENV = {
   PORT: number;
   MONGODB_URI: string;
   AUTH_SALT: string;
+  JWT_ACCESS_SECRET: string;
+  JWT_REFRESH_SECRET: string;
 };
 
 const isAllowedEnv = (env?: string): env is ENV['NODE_ENV'] => {
@@ -20,6 +22,8 @@ const env = {
   PORT: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
   MONGODB_URI: process.env.MONGODB_URI || '',
   AUTH_SALT: process.env.AUTH_SALT || '',
+  JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET || '',
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || '',
 } satisfies ENV;
 
 if (!env.MONGODB_URI) {
@@ -28,6 +32,14 @@ if (!env.MONGODB_URI) {
 
 if (!env.AUTH_SALT) {
   throw new Error('AUTH_SALT is not defined');
+}
+
+if (!env.JWT_ACCESS_SECRET) {
+  throw new Error('JWT_ACCESS_SECRET is not defined');
+}
+
+if (!env.JWT_REFRESH_SECRET) {
+  throw new Error('JWT_REFRESH_SECRET is not defined');
 }
 
 export { env };

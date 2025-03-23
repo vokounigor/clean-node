@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { userRouter } from './features';
+import { userRouter, authRouter } from './features';
 
 const router = Router();
 
@@ -10,6 +10,7 @@ router.get('/api/health-check', (_, res) => {
   });
 });
 
+router.use('/api/auth', authRouter);
 router.use('/api/users', userRouter);
 
 export { router };

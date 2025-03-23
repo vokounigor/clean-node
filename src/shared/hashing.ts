@@ -1,4 +1,5 @@
 import { scryptSync, timingSafeEqual } from 'node:crypto';
+import { Buffer } from 'node:buffer';
 import { env } from '../env';
 
 export const hashPassword = (password: string): string => {
@@ -8,7 +9,11 @@ export const hashPassword = (password: string): string => {
 };
 
 export const verifyPassword = (password: string, hash: string): boolean => {
-  const hashBuffer = Buffer.from(hash, 'hex');
-  const keyBuffer = scryptSync(password, env.AUTH_SALT, 64);
-  return timingSafeEqual(hashBuffer, keyBuffer);
+  try {
+    const hashBuffer = Buffer.from(hash, 'hex');
+    const keyBuffer = scryptSync(password, env.AUTH_SALT, 64);
+    return timingSafeEqual(hashBuffer, keyBuffer);
+  } catch {
+    return false;
+  }
 };

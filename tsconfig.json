@@ -2,12 +2,12 @@
   "exclude": ["node_modules", "dist", "src/**/*.test.ts"],
   "include": ["src/**/*"],
   "compilerOptions": {
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     "types": ["node", "express", "jest"],
     "target": "ESNext",
     "module": "CommonJS",
     "rootDir": "./src",
     "moduleResolution": "Node",
-    "typeRoots": ["./node_modules/@types"],
     "sourceMap": true,
     "outDir": "dist/",
     "esModuleInterop": true,
