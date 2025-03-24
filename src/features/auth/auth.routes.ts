@@ -1,8 +1,17 @@
 import { Router } from 'express';
 import type { AuthController } from './auth.controller';
 import { authMiddleware } from '../../middleware/auth.middleware';
+import { UserService } from '../user';
 
-export function createAuthRouter(authController: AuthController): Router {
+type CreateAuthRouterOptions = {
+  authController: AuthController;
+  userService: UserService;
+};
+
+export function createAuthRouter({
+  authController,
+  userService,
+}: CreateAuthRouterOptions): Router {
   const router = Router();
 
   router.post('/login', authController.login.bind(authController));
@@ -11,13 +20,12 @@ export function createAuthRouter(authController: AuthController): Router {
 
   router.post(
     '/refresh-token',
-    authMiddleware,
     authController.refreshToken.bind(authController)
   );
 
   router.post(
     '/logout',
-    authMiddleware,
+    authMiddleware(userService),
     authController.logout.bind(authController)
   );
 

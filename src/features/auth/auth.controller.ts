@@ -73,12 +73,8 @@ export class AuthController {
     }
   }
 
-  async logout(req: Request, res: Response, next: NextFunction) {
+  async logout(_req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) {
-        throw new UnauthorizedError('No user provided');
-      }
-
       res.clearCookie(REFRESH_TOKEN_COOKIE_NAME);
       res.sendStatus(200);
     } catch (err) {

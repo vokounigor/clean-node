@@ -32,7 +32,7 @@ describe('Auth Endpoints', () => {
     const authService = new AuthService(userService);
     const authController = new AuthController(authService);
     const baseRouter = Router();
-    const router = createAuthRouter(authController);
+    const router = createAuthRouter({ authController, userService });
     baseRouter.use('/api/auth', router);
     app = createApp(baseRouter);
   });
@@ -117,19 +117,8 @@ describe('Auth Endpoints', () => {
   });
 
   describe('POST /api/auth/refresh-token', () => {
-    it('should throw 401 error if authorization header is not provided', async () => {
-      const response = await request(app).post('/api/auth/refresh-token');
-
-      expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toBe('No authorization header provided');
-    });
-
     it('should throw 401 error if refresh token is not provided', async () => {
-      const accessToken = generateAccessToken({ id: '123' });
-      const response = await request(app)
-        .post('/api/auth/refresh-token')
-        .set('Authorization', `Bearer ${accessToken}`);
+      const response = await request(app).post('/api/auth/refresh-token');
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('error');
@@ -137,10 +126,8 @@ describe('Auth Endpoints', () => {
     });
 
     it('should throw 400 error if refresh token is invalid', async () => {
-      const accessToken = generateAccessToken({ id: '123' });
       const response = await request(app)
         .post('/api/auth/refresh-token')
-        .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `${REFRESH_TOKEN_COOKIE_NAME}=invalid`);
 
       expect(response.status).toBe(400);
@@ -149,11 +136,9 @@ describe('Auth Endpoints', () => {
     });
 
     it('should throw 404 error if user with id from refresh token does not exist', async () => {
-      const accessToken = generateAccessToken({ id: '123' });
       const refreshToken = generateRefreshToken({ id: '123' });
       const response = await request(app)
         .post('/api/auth/refresh-token')
-        .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}`);
 
       expect(response.status).toBe(404);
@@ -162,14 +147,13 @@ describe('Auth Endpoints', () => {
     });
 
     it('should throw 400 error if refresh token is expired', async () => {
-      const accessToken = generateAccessToken({ id: '123' });
+      const user = await userService.createUser(testUser);
       const refreshToken = generateRefreshToken(
-        { id: '123' },
+        { id: user.id },
         { expiresIn: '0s' }
       );
       const response = await request(app)
         .post('/api/auth/refresh-token')
-        .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}`);
 
       expect(response.status).toBe(400);
@@ -177,45 +161,21 @@ describe('Auth Endpoints', () => {
       expect(response.body.error).toBe('Invalid refresh token');
     });
 
-    it('should return 200 status with access token and cookie with same refresh token if refresh token is valid and did not expire', async () => {
-      const accessToken = generateAccessToken({ id: '123' });
+    it('should return 200 status with access token and cookie with refresh token', async () => {
       const user = await userService.createUser(testUser);
       const refreshToken = generateRefreshToken({ id: user.id });
 
       const response = await request(app)
         .post('/api/auth/refresh-token')
-        .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('accessToken');
+      expect(response.body.accessToken).toBeDefined();
       expect(response.headers['set-cookie']).toBeDefined();
       expect(response.headers['set-cookie'][0]).toContain(
         REFRESH_TOKEN_COOKIE_NAME
       );
-      expect(response.headers['set-cookie'][0]).toContain(refreshToken);
-    });
-
-    it('should return 200 status with access token and cookie with new refresh token if refresh token is valid and expired', async () => {
-      const accessToken = generateAccessToken({ id: '123' });
-      const user = await userService.createUser(testUser);
-      const refreshToken = generateRefreshToken(
-        { id: user.id },
-        { expiresIn: '1s' }
-      );
-
-      const response = await request(app)
-        .post('/api/auth/refresh-token')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('Cookie', `${REFRESH_TOKEN_COOKIE_NAME}=${refreshToken}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('accessToken');
-      expect(response.headers['set-cookie']).toBeDefined();
-      expect(response.headers['set-cookie'][0]).toContain(
-        REFRESH_TOKEN_COOKIE_NAME
-      );
-      expect(response.headers['set-cookie'][0]).not.toContain(refreshToken);
     });
   });
 

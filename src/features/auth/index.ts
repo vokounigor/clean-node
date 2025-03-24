@@ -6,7 +6,7 @@ import { createAuthRouter } from './auth.routes';
 const userService = new UserService(new UserRepository());
 const authService = new AuthService(userService);
 const authController = new AuthController(authService);
-const authRouter = createAuthRouter(authController);
+const authRouter = createAuthRouter({ authController, userService });
 
 export {
   authRouter,
