@@ -15,7 +15,7 @@ WORKDIR /app
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-COPY .env.sample .env
+COPY .env.production .env
 
 RUN npm prune --production
 CMD ["node", "dist/index.js"]

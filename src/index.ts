@@ -9,6 +9,7 @@ process.on('uncaughtException', (error) => {
     error: error.message,
     stack: error.stack,
   });
+  console.error('Uncaught Exception', error);
   process.exit(1);
 });
 
@@ -17,6 +18,7 @@ process.on('unhandledRejection', (reason, promise) => {
     reason: reason instanceof Error ? reason.message : String(reason),
     promise: promise,
   });
+  console.error('Unhandled Rejection', reason, promise);
   process.exit(1);
 });
 

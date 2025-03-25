@@ -10,6 +10,7 @@ type ENV = {
   JWT_ACCESS_SECRET: string;
   JWT_REFRESH_SECRET: string;
   LOG_LEVEL: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+  LOG_FILE_PATH: string;
 };
 
 const isAllowedEnv = (env?: string): env is ENV['NODE_ENV'] => {
@@ -34,6 +35,7 @@ const env = {
   LOG_LEVEL: isValidLogLevel(process.env.LOG_LEVEL)
     ? process.env.LOG_LEVEL
     : 'info',
+  LOG_FILE_PATH: process.env.LOG_FILE_PATH || '',
 } satisfies ENV;
 
 if (!env.MONGODB_URI) {
